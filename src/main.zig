@@ -1,7 +1,6 @@
 const std = @import("std");
 const zap = @import("zap");
 const zemplate = @import("zemplate");
-const blog = @import("blog.zig");
 const zyph = @import("zyph");
 const Request = std.http.Server.Request;
 
@@ -19,19 +18,19 @@ pub fn main() !void {
     defer if (gpa.detectLeaks()) std.log.err("LEAKS DETECTED IN MAIN ALLOCATOR\n", .{});
 
     const allocator = gpa.allocator();
-    const cwd = std.fs.cwd();
-    var server = zyph.Server.init(allocator, try cwd.openDir("serve", .{ .iterate = true }));
+    var server = zyph.Server.init(allocator, "serve");
     defer server.deinit();
 
-    var hydration_context = try zyph.hydration_middleware.Context.init(allocator, try std.fs.cwd().openFile("pages/index.html", .{}));
+    var hydration_context = try zyph.hydration_middleware.Context.init(
+        allocator,
+        "components",
+        try std.fs.cwd().openFile("pages/index.html", .{}),
+    );
     defer hydration_context.deinit(allocator);
     try server.middlewares.put(
         zyph.hydration_middleware.NAME,
         zyph.Middleware.init(.post, &hydration_context, &zyph.hydration_middleware.handler),
     );
-
-    var blg_dat = try blog.StaticBlogDataHandle.init(allocator);
-    defer blg_dat.deinit();
 
     for (&[_]zyph.Server.RouteHandler{
         try server.registerHypermediaEndpoint("/", &.{}, &struct {
@@ -51,8 +50,6 @@ pub fn main() !void {
                 try w.writeAll(render);
             }
         }.handler),
-
-        try server.registerHypermediaEndpoint("/Blog", &blg_dat, &blog.blogHandler),
     }) |route_handler| {
         try route_handler.addMiddlewares(.post, &.{zyph.hydration_middleware.NAME});
     }

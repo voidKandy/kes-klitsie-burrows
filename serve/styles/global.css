@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Kode+Mono:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
 
 :root {
   color-scheme: light dark;
@@ -28,7 +28,7 @@
 }
 
 body {
-  font-family: 'Jost', sans-serif;
+  font-family: 'EB Garamond', serif;
   background-color: light-dark(var(--light-bg), var(--dark-bg));
   color: light-dark(var(--light-color), var(--dark-color));
   margin: 0;
@@ -106,7 +106,7 @@ nav-router button {
 }
 
 button {
-  font-family: 'Jost', sans-serif;
+  font-family: 'EB Garamond', serif;
   font-weight: bold;
   border-style: solid;
   border-width: 2px;
